@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 
 from app.database import Base, engine
-import app.models.users
+from app.routers import auth
+import app.models.user  # noqa: F401
 
 app = FastAPI(title="DeskDibs API", version="1.0.0")
+
+app.include_router(auth.router, prefix="/api")
 
 
 @app.on_event("startup")
