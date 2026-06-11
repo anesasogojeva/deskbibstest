@@ -1,18 +1,25 @@
-import uuid
-from sqlalchemy import Column, String, DateTime
-from sqlalchemy.dialects.postgresql import UUID
-from datetime import datetime
+import enum
+
+from sqlalchemy import Enum, String
+from sqlalchemy.orm import Mapped, mapped_column
+
 from app.database import Base
+
+
+class UserRole(str, enum.Enum):
+    employee = "employee"
+    manager = "manager"
+    admin = "admin"
+
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    hashed_password: Mapped[str] = mapped_column(String(255))
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.employee)
+    job_title: Mapped[str | None] = mapped_column(String(150), nullable=True)
 
-    full_name = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False)
-
-    hashed_password = Column(String, nullable=False)
-    role = Column(String, nullable=False)  # employee / admin
-
-    created_at = Column(DateTime, default=datetime.utcnow)
+    def __repr__(self) -> str:
+        return f"<User {self.email} role={self.role.value}>"
