@@ -1,0 +1,24 @@
+from pydantic import BaseModel, EmailStr
+
+from app.models.user import UserRole
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    role: UserRole = UserRole.employee
+    job_title: str | None = None
+
+
+class UserOut(BaseModel):
+    id: int
+    email: str
+    role: UserRole
+    job_title: str | None = None
+
+    model_config = {"from_attributes": True}
